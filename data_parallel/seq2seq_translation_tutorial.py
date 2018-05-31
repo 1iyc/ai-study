@@ -767,9 +767,9 @@ def evaluateRandomly(encoder, decoder, n=10):
 #
 
 hidden_size = 256
-#encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
-net = nn.DataParallel(EncoderRNN(input_lang.n_words, hidden_size).to(device), device_ids=[0])
-encoder1 = net(input_lang.n_words, hidden_size)
+encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
+#encoder_test = nn.DataParallel(EncoderRNN(input_lang.n_words, hidden_size), device_ids=[0])
+#encoder1 = net(input_lang.n_words, hidden_size)
 attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
 
 trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
