@@ -12,7 +12,7 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 
-MAX_LENGTH = 10
+MAX_LENGTH = 30
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 SOS_token = 0
@@ -27,13 +27,11 @@ class Lang:
         self.n_words = 2  # Count SOS and EOS
 
     def addCharacter(self, sentence):
-        sentence = sentence.replace(' ', '')
         for word in sentence:
             self.addWord(word)
 
-    def addSentence(self, sentence):
-        for word in sentence.split(' '):
-            self.addWord(word)
+    def addCluster(self, sentence):
+        self.addWord(sentence)
 
     def addWord(self, word):
         if word not in self.word2index:
@@ -100,7 +98,7 @@ def prepareData(lang1, lang2, reverse=False):
     print("Counting words...")
     for pair in pairs:
         input_lang.addCharacter(pair[0])
-        output_lang.addSentence(pair[1])
+        output_lang.addCluster(pair[1])
     print("Counted words:")
     print(input_lang.name, input_lang.n_words)
     print(output_lang.name, output_lang.n_words)
@@ -108,8 +106,6 @@ def prepareData(lang1, lang2, reverse=False):
 
 
 input_lang, output_lang, pairs = prepareData('class', 'qst', True)
-print(random.choice(pairs))
-
 
 class EncoderRNN(nn.Module):
     def __init__(self, input_size, hidden_size):
@@ -184,20 +180,25 @@ class AttnDecoderRNN(nn.Module):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
 
-def indexesFromSentence(lang, sentence):
-    sentence = sentence.replace(' ', '')
-    return [lang.word2index[word] for word in sentence]
+def indexesFromCluster(lang, sentence):
+    return [lang.word2index[sentence]]
 
-
-def tensorFromSentence(lang, sentence):
-    indexes = indexesFromSentence(lang, sentence)
+def tensorFromCluster(lang, sentence):
+    indexes = indexesFromCluster(lang, sentence)
     indexes.append(EOS_token)
     return torch.tensor(indexes, dtype=torch.long, device=device).view(-1, 1)
 
+def indexesFromCharacter(lang, sentence):
+    return [lang.word2index[word] for word in sentence]
+
+def tensorFromCharacter(lang, sentence):
+    indexes = indexesFromCharacter(lang, sentence)
+    indexes.append(EOS_token)
+    return torch.tensor(indexes, dtype=torch.long, device=device).view(-1, 1)
 
 def tensorsFromPair(pair):
-    input_tensor = tensorFromSentence(input_lang, pair[0])
-    target_tensor = tensorFromSentence(output_lang, pair[1])
+    input_tensor = tensorFromCharacter(input_lang, pair[0])
+    target_tensor = tensorFromCluster(output_lang, pair[1])
     return (input_tensor, target_tensor)
 
 
@@ -363,7 +364,7 @@ def showPlot(points):
 
 def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     with torch.no_grad():
-        input_tensor = tensorFromSentence(input_lang, sentence)
+        input_tensor = tensorFromCharacter(input_lang, sentence)
         input_length = input_tensor.size()[0]
         encoder_hidden = encoder.initHidden()
 
@@ -425,9 +426,9 @@ evaluateRandomly(encoder1, attn_decoder1)
 
 
 
-output_words, attentions = evaluate(
-    encoder1, attn_decoder1, "오므라이스매장어딨어")
-plt.matshow(attentions.numpy())
+#output_words, attentions = evaluate(
+#    encoder1, attn_decoder1, "오므라이스 환불해줘")
+#plt.matshow(attentions.numpy())
 
 
 ######################################################################
@@ -461,14 +462,15 @@ def evaluateAndShowAttention(input_sentence):
     print('output =', ' '.join(output_words))
     showAttention(input_sentence, output_words, attentions)
 
+while True:
+    question = input("> ")
+    evaluateAndShowAttention(question)
 
-evaluateAndShowAttention("elle a cinq ans de moins que moi .")
+#evaluateAndShowAttention("오므라이스 환불")
 
-evaluateAndShowAttention("elle est trop petit .")
+#evaluateAndShowAttention("오므라이스 파는 위치")
 
-evaluateAndShowAttention("je ne crains pas de mourir .")
-
-evaluateAndShowAttention("c est un jeune directeur plein de talent .")
+#evaluateAndShowAttention("크림맛 오므라이스 있나요")
 
 
 ######################################################################
