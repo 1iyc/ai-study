@@ -387,6 +387,15 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
                 decoder_input, decoder_hidden, encoder_outputs)
             decoder_attentions[di] = decoder_attention.data
             topv, topi = decoder_output.data.topk(1)
+
+            # for decoder_output.data debug test
+            v, i = decoder_output.data.topk(4)
+            scores = dict()
+            for j in range(4):
+                scores[j + 1] = f"{round(torch.exp(v[0][j]).item() * 100, 2)}% {output_lang.index2word[i[0][j].item()]}"
+            print(scores)
+            ##
+
             if topi.item() == EOS_token:
                 decoded_words.append('<EOS>')
                 break
