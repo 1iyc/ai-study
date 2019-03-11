@@ -4,10 +4,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-# font_name = matplotlib.font_manager.FontProperties(
-#                 fname="C:/Windows/Fonts/D2Coding/D2Coding-Ver1.3.2-20180524-all.ttc"
-#             ).get_name()
-# matplotlib.rc('font', family=font_name)
+font_name = matplotlib.font_manager.FontProperties(
+                fname="C:\malgun.ttf"
+            ).get_name()
+matplotlib.rc('font', family=font_name)
 
 sentences = ["나 고양이 좋다",
              "나 강아지 좋다",
@@ -29,6 +29,7 @@ sentences_processor = learn.preprocessing.VocabularyProcessor(sentences_word_max
 x = np.array(list(sentences_processor.fit_transform(sentences)))
 
 word_sequence = " ".join(sentences).split()
+word_list = set(word_sequence)
 
 del sentences
 
@@ -36,7 +37,7 @@ skip_grams = []
 
 for i in range(1, len(word_sequence) - 1):
     target = sentences_processor.vocabulary_.get(word_sequence[i])
-    context = [sentences_processor.vocabulary_.get(word_sequence[i - 1])], [sentences_processor.vocabulary_.get(word_sequence[i + 1])]
+    context = [sentences_processor.vocabulary_.get(word_sequence[i - 1]), sentences_processor.vocabulary_.get(word_sequence[i + 1])]
 
     for w in context:
         skip_grams.append([target, w])
@@ -100,3 +101,38 @@ loss = tf.reduce_mean(
             tf.nn.nce_loss(nce_weights, nce_biases, labels, selected_embed, num_sampled, voc_size))
 
 train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss)
+
+#########
+# 신경망 모델 학습
+######
+with tf.Session() as sess:
+    init = tf.global_variables_initializer()
+    sess.run(init)
+
+    for step in range(1, training_epoch + 1):
+        batch_inputs, batch_labels = random_batch(skip_grams, batch_size)
+
+        _, loss_val = sess.run([train_op, loss],
+                               feed_dict={inputs: batch_inputs,
+                                          labels: batch_labels})
+
+        if step % 10 == 0:
+            print("loss at step ", step, ": ", loss_val)
+
+    # matplot 으로 출력하여 시각적으로 확인해보기 위해
+    # 임베딩 벡터의 결과 값을 계산하여 저장합니다.
+    # with 구문 안에서는 sess.run 대신 간단히 eval() 함수를 사용할 수 있습니다.
+    trained_embeddings = embeddings.eval()
+
+
+#########
+# 임베딩된 Word2Vec 결과 확인
+# 결과는 해당 단어들이 얼마나 다른 단어와 인접해 있는지를 보여줍니다.
+######
+for i, label in enumerate(word_list):
+    x, y = trained_embeddings[i]
+    plt.scatter(x, y)
+    plt.annotate(label, xy=(x, y), xytext=(5, 2),
+                 textcoords='offset points', ha='right', va='bottom')
+
+plt.show()
