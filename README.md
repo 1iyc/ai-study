@@ -2,7 +2,7 @@
 Repository for AI Study
 
 
-## Reading
+## Readings
 
 What are different things in tf 2.0
 
@@ -19,3 +19,7 @@ https://zzsza.github.io/data/2018/08/30/google-colab/
 How to use deep learning server on laptop (Docker, Jupyter)
 
 https://eungbean.github.io/2019/03/22/jupyter-ssh/
+
+AI for Business
+
+https://www.edwith.org/schoolofai
