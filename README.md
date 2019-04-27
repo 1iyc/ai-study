@@ -1,6 +1,9 @@
 # ai-study
 Repository for AI Study
 
+## HYU-AILAB
+
+Study from HYU-AILAB
 
 ## Readings
 
