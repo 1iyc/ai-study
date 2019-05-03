@@ -3,16 +3,17 @@
 import tensorflow as tf
 import numpy as np
 
-
-data = np.loadtxt('./data/data.csv', delimiter=',',
-                  unpack=True, dtype='float32')
+CSV_PATH = "./data/data.csv"
 
 # 털, 날개, 기타, 포유류, 조류
-# x_data = 0, 1
-# y_data = 2, 3, 4
-x_data = np.transpose(data[0:2])
-y_data = np.transpose(data[2:])
+dataset = tf.data.experimental.make_csv_dataset(CSV_PATH, batch_size=1,
+                                                column_names=["feather", 'wing', 'chapter'],
+                                                column_defaults=[tf.float32, tf.float32, tf.float32],
+                                                label_name="chapter")
+iterator = dataset.make_one_shot_iterator()
+next_element_test = iterator.get_next()
 
+inputs, labels = next_element_test
 
 #########
 # 신경망 모델 구성
@@ -55,11 +56,14 @@ else:
     sess.run(tf.global_variables_initializer())
 
 # 최적화 진행
-for step in range(2):
-    sess.run(train_op, feed_dict={X: x_data, Y: y_data})
+while True:
+    try:
+        sess.run(train_op, feed_dict={X: inputs, Y: labels})
 
-    print('Step: %d, ' % sess.run(global_step),
-          'Cost: %.3f' % sess.run(cost, feed_dict={X: x_data, Y: y_data}))
+        print('Step: %d, ' % sess.run(global_step),
+              'Cost: %.3f' % sess.run(cost, feed_dict={X: inputs, Y: labels}))
+    except tf.errors.OutOfRangeError:
+        break
 
 # 최적화가 끝난 뒤, 변수를 저장합니다.
 saver.save(sess, './model/dnn.ckpt', global_step=global_step)
@@ -70,9 +74,9 @@ saver.save(sess, './model/dnn.ckpt', global_step=global_step)
 ######
 prediction = tf.argmax(model, 1)
 target = tf.argmax(Y, 1)
-print('예측값:', sess.run(prediction, feed_dict={X: x_data}))
-print('실제값:', sess.run(target, feed_dict={Y: y_data}))
+print('예측값:', sess.run(prediction, feed_dict={X: inputs}))
+print('실제값:', sess.run(target, feed_dict={Y: labels}))
 
 is_correct = tf.equal(prediction, target)
 accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
-print('정확도: %.2f' % sess.run(accuracy * 100, feed_dict={X: x_data, Y: y_data}))
+print('정확도: %.2f' % sess.run(accuracy * 100, feed_dict={X: inputs, Y: labels}))
