@@ -5,6 +5,12 @@ Repository for AI Study
 
 Study from HYU-AILAB
 
+## golbin
+
+Study from github golbin (TensorFlow-Tutorials)
+
+https://github.com/golbin/TensorFlow-Tutorials
+
 ## Readings
 
 What are different things in tf 2.0
