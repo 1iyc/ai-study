@@ -21,4 +21,23 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 
 ## Tutorial and.py
 
+## 다층 퍼셉트론
+
+* 입력층과 출력층 사이에 1개 이상의 hidden layer 추가
+* 대부분 역전파 알고리즘으로 학습
+
+## 역전파
+
+* loss를 줄이는 것이 목표
+* w = w - learning rate * (𝜕E / 𝜕w)
+
+## MLP의 한계
+
+
+
+## Activation function
+
+* 네트워크에 비선형을 추가하기위해 사용됨
+* 
+
 
