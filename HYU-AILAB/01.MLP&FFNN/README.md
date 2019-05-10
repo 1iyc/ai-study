@@ -43,8 +43,8 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 * 네트워크에 비선형을 추가하기위해 사용됨
 * H(X) = f(g(i(j(X)))) -> H(X) = WX 결국 층이 많아도 선형적이게 된다
 * Activation function 추가시 각 층의 출력 결과를 비선형화 하고 다음 층에 넘겨준다.
-- H(X) = af(f(af(g(af(i(af(j(X))))))))
-+ af는 activation function
+  * H(X) = af(f(af(g(af(i(af(j(X))))))))
+    * af는 activation function
 
 ## Activation function 종류
 
@@ -69,11 +69,11 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 * 역전파 신경망에 많이 쓰임
 * 가중치나 바이어스를 조금 변화 시켰을 때 출력이 조금씩 변화하도록 만들 수 있다.
 * Gradient Vanishing
-- 그라이언트가 죽어서 학습이 되지 않는다.
-- 이전 레이어로 전파되는 그라디언트가 0에 가까워지는 현상
-- 양 극단의 미분값이 0에 가깝기 때문에 발생한다.
-- 레이어를 깊게 쌓으면 파라미터의 업데이트가 제대로 이루어지지 않는다
-- ReLU나 초기화를 잘 하여 극복 가능
+  * 그라이언트가 죽어서 학습이 되지 않는다.
+  * 이전 레이어로 전파되는 그라디언트가 0에 가까워지는 현상
+  * 양 극단의 미분값이 0에 가깝기 때문에 발생한다.
+  * 레이어를 깊게 쌓으면 파라미터의 업데이트가 제대로 이루어지지 않는다
+  * ReLU나 초기화를 잘 하여 극복 가능
 * 지수함수라서 계산이 복잡하다.
 
 ### LeLU
@@ -84,10 +84,10 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 * 계산이 효율적
 * Sigmoid보다 계산속도가 빠름
 * 음수가 나온 노드는 학습이 불가능
-- 간단한 네트워크에서는 성능저하
-- leaky ReLU의 존재
+  * 간단한 네트워크에서는 성능저하
+  * leaky ReLU의 존재
 * 0에서 미분 불가능
-- softplus함수로 해결: 0근처에 떨어지는 데이터들 많을 경우 성능 증가
+  * softplus함수로 해결: 0근처에 떨어지는 데이터들 많을 경우 성능 증가
 
 ### Leaky ReLU
 
@@ -102,8 +102,8 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 * 주로 출력 노드에서 사용
 * 분류, 강화학습에 사용
 * vs sigmoid
-- sigmoid는 해당 뉴런으로 들어오는 입력들과 bias에 의해 출력 결정
-- softmax는 다른 뉴런의 출력 값들 과의 상대적인 비교를 통해 출력이 결정
+  * sigmoid는 해당 뉴런으로 들어오는 입력들과 bias에 의해 출력 결정
+  * softmax는 다른 뉴런의 출력 값들 과의 상대적인 비교를 통해 출력이 결정
 
 ## Loss Function
 
@@ -127,13 +127,13 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 ### Stochastic Gradient Descent (SGD)
 
 * Batch Gradient Descent: Loss function 계산시 전체 train set을 사용
-- Input data가 많아 모든 training data에 대해 gradient 계산&평균 낸 후 update
-- 많은 계산 량이 필요하다 -> SGD 사용
+  * Input data가 많아 모든 training data에 대해 gradient 계산&평균 낸 후 update
+  * 많은 계산 량이 필요하다 -> SGD 사용
 * Loss function을 계산 시 일부 조그마한 데이터의 모음에 대해서만 계산
-- Batch Gradient Desent 보다 부정확하지만 빠름
-- 여러번 반복 시 BGD 결과와 유사한 결과로 수렴
-- Local minima에 빠지지 않고 더 좋은 결과 낼 수 있음
-- 다른 알고리즘에 비해 성능 낮음
+  * Batch Gradient Desent 보다 부정확하지만 빠름
+  * 여러번 반복 시 BGD 결과와 유사한 결과로 수렴
+  * Local minima에 빠지지 않고 더 좋은 결과 낼 수 있음
+  * 다른 알고리즘에 비해 성능 낮음
 
 ### Momentum
 
@@ -147,8 +147,8 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 * Momentum 방식 기초지만 Gradient 계산 방식이 다름
 * momentum step을 먼저 이동했다고 가정 후 그자리에서의 gradient를 구해서 gradient step 이동
 * Momentum 방식보다 효과적으로 이동가능
-- 관성에 의해 훨씬 멀리 갈 수 있는 Momentum 방식의 단점 보완
-- 멈춰야 할 적절한 시점에서 제동
+  * 관성에 의해 훨씬 멀리 갈 수 있는 Momentum 방식의 단점 보완
+  * 멈춰야 할 적절한 시점에서 제동
 
 ### Adagrad (Adaptive Gradient)
 
@@ -173,6 +173,10 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 
 * RMSProp와 Momentum 방식을 합친 것 같은 알고리즘
 * Momentum(지금까지 계산한 기울기의 지수평균) + RMSProp(기울기의 제곱값의 지수평균)
+
+## xor.py
+
+* 
 
 ## Readings
 
