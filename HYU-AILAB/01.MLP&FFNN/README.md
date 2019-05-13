@@ -176,7 +176,8 @@ Multi Layer Perceptron & Feed Forwad Neural Network
 
 ## xor.py
 
-* 
+* Tutorial에서 eager execution으로 구현
+* Gradient Descent 구현 난해
 
 ## Readings
 
