@@ -23,7 +23,7 @@ class Model(tf.keras.Model):
 
     def call(self, inputs):
         L1 = tf.sigmoid(tf.matmul(inputs, self.W1) + self.B1)
-        return tf.sigmoid(tf.matmul(L1, self.W2) + self.B2)
+        return tf.matmul(L1, self.W2) + self.B2
 
 
 training_inputs = tf.constant([[0, 0],
@@ -43,9 +43,9 @@ print(training_outputs)
 def loss(model, inputs, targets):
     # print("inputs", inputs)
     # print("targets", targets)
-    cost = -tf.reduce_mean(targets*tf.log(model(inputs)) + (1-targets)*tf.log(1-model(inputs)))
+    # cost = -tf.reduce_mean(targets*tf.log(model(inputs)) + (1-targets)*tf.log(1-model(inputs)))
     # print("cost1", cost)
-    # cost = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=model(inputs), labels=targets))
+    cost = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=model(inputs), labels=targets))
     # print("cost2", cost)
     # cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model(inputs), labels=targets))
     return cost
