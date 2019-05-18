@@ -5,6 +5,8 @@ Repository for AI Study
 
 Study from HYU-AILAB
 
+https://github.com/HYU-AILAB/ai-seminar
+
 ## golbin
 
 Study from github golbin (TensorFlow-Tutorials)
