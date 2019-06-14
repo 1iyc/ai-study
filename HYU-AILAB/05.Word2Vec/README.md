@@ -41,4 +41,13 @@
 * C는 Context word의 수. window size가 n이면 C는 n*2
 * h는 입력 벡터와 행렬 W의 내적. 입력 벡터가 One-hot-vector이기 때문에 목표 단어의 index에 해당하는 W의 행 값을 그대로 벡터 h로 copy.
 ![h-param](./images/2.png)
-* ycj는 xk가 주어졌을 때, 
+* ycj는 xk가 주어졌을 때, Output-Layer의 C번째 panel의 j번째 단어가 나타날 확률
+
+## Negative Sampling
+
+* 계산량을 줄이기 위해 Softmax function을 통해 확률을 구할 때 전체 단어를 대상으로 구하는게 아닌, 일부 단어만 뽑아서 계산
+
+## Subsampling
+
+* 자주 등장하는 단어들을 확률적으로 제외하여 Dataset의 수를 줄임
+* 빈도가 높은 단어는 학습에서 제외, 낮은 단어는 빼놓지 않고 학습
