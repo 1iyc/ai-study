@@ -51,3 +51,10 @@
 
 * 자주 등장하는 단어들을 확률적으로 제외하여 Dataset의 수를 줄임
 * 빈도가 높은 단어는 학습에서 제외, 낮은 단어는 빼놓지 않고 학습
+
+## Readings
+
+* tensorflow korea
+
+<https://tensorflowkorea.gitbooks.io/tensorflow-kr/content/g3doc/tutorials/word2vec/>
+
