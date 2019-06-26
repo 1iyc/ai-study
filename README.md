@@ -34,3 +34,7 @@ https://github.com/golbin/TensorFlow-Tutorials
 * AI for Business
 
   * https://www.edwith.org/schoolofai
+
+* 자습해도 모르겠던 딥러닝, 머리속에 인스톨시켜드립니다.
+
+  * https://www.slideshare.net/yongho/ss-79607172
