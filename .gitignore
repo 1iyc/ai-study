@@ -98,3 +98,7 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/venv,pycharm
+
+log/
+data/
+.idea/
