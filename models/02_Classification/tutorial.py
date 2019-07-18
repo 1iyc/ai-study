@@ -30,6 +30,9 @@ def classification_basic(log_dir):
 
     y_data = to_one_hot(y_data)
 
+    print(x_data)
+    print(y_data)
+
     graph = tf.Graph()
 
     with graph.as_default():
@@ -38,21 +41,32 @@ def classification_basic(log_dir):
             X = tf.placeholder(tf.float32, name="X1", shape=[None, 2])
             Y = tf.placeholder(tf.float32, name="Y1", shape=[None, 3])
 
-        with tf.name_scope("weight"):
-            W = tf.Variable(tf.random_uniform([2, 3], -1.0, 1.0), name="W1")
-            tf.summary.histogram("W1", W)
+        with tf.name_scope("layer1"):
+            W1 = tf.Variable(tf.random_uniform([2, 10], -1.0, 1.0), name="W1")
+            b1 = tf.Variable(tf.zeros([10]), name="b1")
+            L1 = tf.add(tf.matmul(X, W1), b1)
+            L1 = tf.nn.relu(L1)
 
-        with tf.name_scope("bias"):
-            b = tf.Variable(tf.random_uniform([3], -1.0, 1.0), name="b1")
-            tf.summary.histogram("b1", b)
+            tf.summary.histogram("W1", W1)
+            tf.summary.histogram("b1", b1)
+
+        with tf.name_scope("layer2"):
+            W2 = tf.Variable(tf.random_uniform([10, 3], -1.0, 1.0), name="W2")
+            b2 = tf.Variable(tf.zeros([3]), name="b2")
+
+            tf.summary.histogram("W2", W2)
+            tf.summary.histogram("b1", b2)
+
+            model = tf.add(tf.matmul(L1, W2), b2)
 
         with tf.name_scope("loss"):
-            hypothesis = tf.nn.softmax(tf.matmul(X, W) + b)
-            loss = tf.reduce_min(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
+            loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model, labels=Y))
+
             tf.summary.scalar("loss", loss)
 
         with tf.name_scope("optimizer"):
-            optimizer = tf.train.AdamOptimizer(learning_rate=0.1).minimize(loss)
+            optimizer = tf.train.AdamOptimizer(learning_rate=0.01)
+            train_op = optimizer.minimize(loss)
 
         merged = tf.summary.merge_all()
 
@@ -74,7 +88,7 @@ def classification_basic(log_dir):
 
             run_metadata = tf.RunMetadata()
 
-            _, summary, loss_val = session.run([optimizer, merged, loss],
+            _, summary, loss_val = session.run([train_op, merged, loss],
                                                feed_dict=feed_dict,
                                                run_metadata=run_metadata)
             average_loss += loss_val
@@ -94,8 +108,11 @@ def classification_basic(log_dir):
         saver.save(session, os.path.join(log_dir, 'model.ckpt'))
 
         print("\n=== Test ===")
-        print("X: [0, 1], Y:", session.run(tf.argmax(hypothesis), feed_dict={X: [[0, 1]]}))
-        print("X: [1, 0], Y:", session.run(tf.argmax(hypothesis), feed_dict={X: [[1, 0]]}))
+        print("X: [0, 1], Y:", session.run(tf.argmax(model, 1), feed_dict={X: [[0, 1]]}))
+        print("X: [1, 0], Y:", session.run(tf.argmax(model, 1), feed_dict={X: [[1, 0]]}))
+
+        print("model: ", session.run(tf.argmax(model, 1), feed_dict={X: x_data}))
+        print("answer: :", session.run(tf.argmax(Y, 1), feed_dict={Y: y_data}))
 
     writer.close()
 
