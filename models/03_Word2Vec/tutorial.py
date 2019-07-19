@@ -74,7 +74,7 @@ def word2vec_basic(log_dir):
     # 학습을 반복할 횟수
     training_epoch = 300
     # 학습률
-    learning_rate = 0.1
+    learning_rate = 3e-5
     # 한 번에 학습할 데이터의 크기
     batch_size = 20
     # 단어 벡터를 구성할 임베딩 차원의 크기
@@ -91,35 +91,36 @@ def word2vec_basic(log_dir):
     with graph.as_default():
 
         with tf.name_scope("inputs"):
-            X = tf.placeholder(tf.float32, name="word_batch", shape=[batch_size, None])
-            Y = tf.placeholder(tf.float32, name="labels", shape=[batch_size, 1])
+            train_inputs = tf.placeholder(tf.int32, name="word_batch", shape=[batch_size])
+            train_labels = tf.placeholder(tf.int32, name="labels", shape=[batch_size, 1])
 
-        with tf.name_scope("layer1"):
-            W1 = tf.Variable(tf.random_uniform([2, 10], -1.0, 1.0), name="W1")
-            b1 = tf.Variable(tf.zeros([10]), name="b1")
-            L1 = tf.add(tf.matmul(X, W1), b1)
-            L1 = tf.nn.relu(L1)
+        with tf.name_scope("embeddings"):
+            embeddings = tf.Variable(tf.random_uniform([voc_size, embedding_size], -1.0, 1.0))
+            selected_embed = tf.nn.embedding_lookup(embeddings, train_inputs)
 
-            tf.summary.histogram("W1", W1)
-            tf.summary.histogram("b1", b1)
+        with tf.name_scope("weights"):
+            nce_weights = tf.Variable(tf.random_uniform([voc_size, embedding_size], -1.0, 1.0))
 
-        with tf.name_scope("layer2"):
-            W2 = tf.Variable(tf.random_uniform([10, 3], -1.0, 1.0), name="W2")
-            b2 = tf.Variable(tf.zeros([3]), name="b2")
+            tf.summary.histogram("nce_weights", nce_weights)
 
-            tf.summary.histogram("W2", W2)
-            tf.summary.histogram("b1", b2)
+        with tf.name_scope("biases"):
+            nce_biases = tf.Variable(tf.zeros([voc_size]))
 
-            model = tf.add(tf.matmul(L1, W2), b2)
+            tf.summary.histogram("nce_biases", nce_biases)
 
         with tf.name_scope("loss"):
-            loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model, labels=Y))
+            loss = tf.reduce_mean(
+                tf.nn.nce_loss(weights=nce_weights,
+                               biases=nce_biases,
+                               labels=train_labels,
+                               inputs=selected_embed,
+                               num_sampled=num_sampled,
+                               num_classes=voc_size))
 
             tf.summary.scalar("loss", loss)
 
         with tf.name_scope("optimizer"):
-            optimizer = tf.train.AdamOptimizer(learning_rate=0.01)
-            train_op = optimizer.minimize(loss)
+            optimizer = tf.train.AdamOptimizer(learning_rate).minimize(loss)
 
         merged = tf.summary.merge_all()
 
@@ -127,7 +128,7 @@ def word2vec_basic(log_dir):
 
         saver = tf.train.Saver()
 
-    num_steps = 100000
+    num_steps = 300001
 
     with tf.compat.v1.Session(graph=graph) as session:
         writer = tf.summary.FileWriter(log_dir, session.graph)
@@ -137,11 +138,12 @@ def word2vec_basic(log_dir):
 
         average_loss = 0
         for step in xrange(num_steps):
-            feed_dict = {X: x_data, Y: y_data}
+            batch_inputs, batch_labels = random_batch(skip_grams, batch_size)
+            feed_dict = {train_inputs: batch_inputs, train_labels: batch_labels}
 
             run_metadata = tf.RunMetadata()
 
-            _, summary, loss_val = session.run([train_op, merged, loss],
+            _, summary, loss_val = session.run([optimizer, merged, loss],
                                                feed_dict=feed_dict,
                                                run_metadata=run_metadata)
             average_loss += loss_val
@@ -160,14 +162,17 @@ def word2vec_basic(log_dir):
 
         saver.save(session, os.path.join(log_dir, 'model.ckpt'))
 
-        print("\n=== Test ===")
-        print("X: [0, 1], Y:", session.run(tf.argmax(model, 1), feed_dict={X: [[0, 1]]}))
-        print("X: [1, 0], Y:", session.run(tf.argmax(model, 1), feed_dict={X: [[1, 0]]}))
-
-        print("model: ", session.run(tf.argmax(model, 1), feed_dict={X: x_data}))
-        print("answer: :", session.run(tf.argmax(Y, 1), feed_dict={Y: y_data}))
+        trained_embeddings = embeddings.eval()
 
     writer.close()
+
+    for i, label in enumerate(word_dict):
+        x, y = trained_embeddings[i]
+        plt.scatter(x, y)
+        plt.annotate(label, xy=(x, y), xytext=(5, 2),
+                     textcoords='offset points', ha='right', va='bottom')
+
+    plt.show()
 
 
 def main(_):
