@@ -66,7 +66,8 @@ def classification_basic(log_dir):
 
         with tf.name_scope("optimizer"):
             optimizer = tf.train.AdamOptimizer(learning_rate=0.01)
-            train_op = optimizer.minimize(loss)
+            global_step = tf.Variable(0, name='global_step', trainable=False)
+            train_op = optimizer.minimize(loss, global_step=global_step)
 
         merged = tf.summary.merge_all()
 
@@ -77,13 +78,19 @@ def classification_basic(log_dir):
     num_steps = 100000
 
     with tf.compat.v1.Session(graph=graph) as session:
+        ckpt = tf.train.get_checkpoint_state(os.path.join(log_dir))
+        if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
+            saver.restore(session, ckpt.model_checkpoint_path)
+        else:
+            init.run()
+
         writer = tf.summary.FileWriter(log_dir, session.graph)
 
-        init.run()
         print("Initialized")
 
         average_loss = 0
-        for step in xrange(num_steps):
+        num_global_steps = session.run(global_step)
+        for step in xrange(num_global_steps, num_global_steps + num_steps):
             feed_dict = {X: x_data, Y: y_data}
 
             run_metadata = tf.RunMetadata()
@@ -105,7 +112,9 @@ def classification_basic(log_dir):
             if step == (num_steps - 1):
                 writer.add_run_metadata(run_metadata, 'step%d' % step)
 
-        saver.save(session, os.path.join(log_dir, 'model.ckpt'))
+        saver.save(session, os.path.join(log_dir, 'model.ckpt'), global_step=global_step)
+
+        print("global steps :  ", session.run(global_step))
 
         print("\n=== Test ===")
         print("X: [0, 1], Y:", session.run(tf.argmax(model, 1), feed_dict={X: [[0, 1]]}))
