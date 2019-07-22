@@ -44,7 +44,7 @@ def linear_regression_basic(log_dir):
 
         saver = tf.train.Saver()
 
-    num_steps = 100000
+    num_steps = 300000
 
     with tf.compat.v1.Session(graph=graph) as session:
         writer = tf.summary.FileWriter(log_dir, session.graph)
@@ -65,15 +65,15 @@ def linear_regression_basic(log_dir):
 
             writer.add_summary(summary, step)
 
-            if step == (num_steps - 1):
-                writer.add_run_metadata(run_metadata, 'step%d' % step)
-
             if step % 2000 == 0:
                 if step > 0:
                     average_loss /= 2000
 
                 print('Average loss at step ', step, ': ', average_loss)
                 average_loss = 0
+
+            if step == (num_steps - 1):
+                writer.add_run_metadata(run_metadata, 'step%d' % step)
 
         saver.save(session, os.path.join(log_dir, 'model.ckpt'))
 
