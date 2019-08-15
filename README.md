@@ -38,3 +38,7 @@ https://github.com/golbin/TensorFlow-Tutorials
 * 자습해도 모르겠던 딥러닝, 머리속에 인스톨시켜드립니다.
 
   * https://www.slideshare.net/yongho/ss-79607172
+
+* 인텔리전트 비디오 분석을 위한 딥러닝
+
+  * https://github.com/tensorflow/models/tree/master/research/object_detection
