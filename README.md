@@ -13,6 +13,10 @@ Study from github golbin (TensorFlow-Tutorials)
 
 https://github.com/golbin/TensorFlow-Tutorials
 
+## pytorch-transformers
+
+https://github.com/huggingface/pytorch-transformers
+
 ## Readings
 
 * What are different things in tf 2.0
