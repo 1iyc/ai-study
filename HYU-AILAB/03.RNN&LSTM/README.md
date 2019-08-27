@@ -49,6 +49,10 @@
 
 * CNN에서 Fully Connected한 것을 RNN의 첫번째 히든 레이어로 
 
+## GRU
+
+* forget, input gate 하나로 통합 -> 웨이트 파라미터 수가 줄어듦
+
 ## Readings
 
 * https://ratsgo.github.io/natural%20language%20processing/2017/03/09/rnnlstm/
