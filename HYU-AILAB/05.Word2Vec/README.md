@@ -38,19 +38,23 @@
 * W는 Input-Hidden Layer 사이의 가중치 행렬. V * N 크기를 가지게 됨
 * W'는 Hidden-Output Layer 사이의 가중치 행렬. N * V 크기
 * N은 Embedding-Size로 압축하고자 하는 차원
-* C는 Context word의 수. window size가 n이면 C는 n*2
+* C는 Context word의 수. window size가 n이면 C는 n * 2
 * h는 입력 벡터와 행렬 W의 내적. 입력 벡터가 One-hot-vector이기 때문에 목표 단어의 index에 해당하는 W의 행 값을 그대로 벡터 h로 copy.
 ![h-param](./images/2.png)
 * ycj는 xk가 주어졌을 때, Output-Layer의 C번째 panel의 j번째 단어가 나타날 확률
 
 ## Negative Sampling
 
-* 계산량을 줄이기 위해 Softmax function을 통해 확률을 구할 때 전체 단어를 대상으로 구하는게 아닌, 일부 단어만 뽑아서 계산
+* Positive sample: 말뭉치에 존재하는 페어 cf) Skip-Gram 그림에서 (hello, my), (name, is)
+* Negative sample: 말뭉치에 존재하지 않는 페어 cf) 위 그림에서 (hello, you), (bob, meet)
+* 말뭉치에 등장한 비율이 높은 단어일 수록 Negative sample로 뽑힐 확률이 높다.
+* Postive sample에 대해서는 softmax값이 높아지도록, Negative sample에 대해서는 낮아지도록 학습
 
-## Subsampling
+## Subsampling frequent words
 
 * 자주 등장하는 단어들을 확률적으로 제외하여 Dataset의 수를 줄임
 * 빈도가 높은 단어는 학습에서 제외, 낮은 단어는 빼놓지 않고 학습
+* 말뭉치에 자주 등장한 단어는 학습에서 제외될 확률이 높다.
 
 ## Readings
 
