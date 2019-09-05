@@ -25,4 +25,15 @@ Attention(Q, K, V) = Attention Value
   * 이 유사도를 키와 매핑 되어 있는 각각의 Value에 반영
   * 유사도가 반영된 Value를 모두 더해서 리턴 (이 값이 Attention Value)
 
+## Dot-Product Attention
 
+1. Attention 메커니즘 사용하여 LSTM 출력단어 예측
+2. 출력단어를 예측할 때 얼마나 도움이되는지 정도를 측정
+3. 2.의 수치를 Decoder로 전
+
+## Improve
+
+* global attention: 인코더 전체 Hidden stage에 대해 attention 측정
+* local attention: 윈도우를 이용하여 대략적으로 입력문장의  단어를 추려내어 측정
+* soft attention
+* hard attention
