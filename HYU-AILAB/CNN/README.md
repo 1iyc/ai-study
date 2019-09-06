@@ -41,7 +41,7 @@
 3. Lelu
   * cf) 3D 매트릭스에서 음수 제거
 4. Pooling
-  * cf) 2*2 필터로 Maxpooling -> 5 * 5 * 3 3D 생성
+  * cf) 2 * 2 필터로 Maxpooling -> 5 * 5 * 3 3D 생성
 5. 2~4 반복 후 flatten
   * cf) 4에서 바로 시행시 75크기의 Array 변환
 6. MLP 진행
@@ -55,3 +55,28 @@
   * 숫자가 행별로 같으면 가로성분 추출하는 필터
   * 숫자가 열별로 같으면 세로성분 추출하는 필터
   * 가운데 부분이 크고 주변이 작으면 경계성분 추출하는 필터 
+
+## AlexNet (2012)
+
+2 GPU
+LRN 필요
+
+## GoogleNet (2014)
+
+deeeep
+inception module (1 * 1 conv)
+auxiliary classifier
+
+## VGGNet (2014)
+
+Relatively simple
+3 * 3 conv가 최고
+19까지가 적당
+
+## ResNet
+
+deeeeep
+vanishing & exploding gradient
+resdual learning
+
+
