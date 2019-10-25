@@ -13,8 +13,12 @@ def get_size_vgg_feat_map(input_W, input_H):
     return output_W, output_H
 
 
+# TODO: Should fix ovr can be operated
 def rmac_regions(W, H, L):
-    ovr = 0.4 # desired overlap of neighboring regions
+    W = 32.0
+    H = 32.0
+    L = 10
+    ovr = 0.1 # desired overlap of neighboring regions
     steps = np.array([2, 3, 4, 5, 6, 7], dtype=np.float) # possible regions for the long dimension
 
     w = min(W,H)
@@ -31,7 +35,7 @@ def rmac_regions(W, H, L):
 
     regions = []
 
-    for l in range(1,L+1):
+    for l in range(1, L+1):
 
         wl = np.floor(2*w/(l+1))
         wl2 = np.floor(wl/2 - 1)
@@ -39,12 +43,12 @@ def rmac_regions(W, H, L):
         b = (W - wl) / (l + Wd - 1)
         if np.isnan(b): # for the first level
             b = 0
-        cenW = np.floor(wl2 + np.arange(0,l+Wd)*b) - wl2 # center coordinates
+        cenW = np.floor(wl2 + np.arange(0, l+Wd)*b) - wl2 # center coordinates
 
         b = (H-wl)/(l+Hd-1)
         if np.isnan(b): # for the first level
             b = 0
-        cenH = np.floor(wl2 + np.arange(0,l+Hd)*b) - wl2 # center coordinates
+        cenH = np.floor(wl2 + np.arange(0, l+Hd)*b) - wl2 # center coordinates
 
         for i_ in cenH:
             for j_ in cenW:
