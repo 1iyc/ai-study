@@ -13,51 +13,43 @@ def get_size_vgg_feat_map(input_W, input_H):
     return output_W, output_H
 
 
-# TODO: Should fix ovr can be operated
+def devide_line(total_line, region_line, ovr):
+    # print "total_line: " + str(total_line)
+    # print "region_line: " + str(region_line)
+
+    start_locations = np.array([0.0])
+    end_location = total_line - region_line
+
+    # region_count = 1
+    if not end_location == 0:
+        start_locations = np.append(start_locations, end_location)
+        # region_count = 2
+        if not region_line - end_location > total_line * ovr:
+            region_count = np.floor(end_location / (region_line * (1 - ovr))) + 2
+            interval = end_location / (region_count - 1)
+            start_locations = np.floor(np.arange(0, region_count) * interval)
+
+    # print "region_count: " + str(region_count)
+
+    return start_locations
+
+
 def rmac_regions(W, H, L):
-    W = 32.0
-    H = 32.0
-    L = 10
-    ovr = 0.1 # desired overlap of neighboring regions
-    steps = np.array([2, 3, 4, 5, 6, 7], dtype=np.float) # possible regions for the long dimension
-
-    w = min(W,H)
-
-    b = (max(H,W) - w)/(steps-1)
-    idx = np.argmin(abs(((w ** 2 - w*b)/w ** 2)-ovr)) # steps(idx) regions for long dimension
-
-    # region overplus per dimension
-    Wd, Hd = 0, 0
-    if H < W:
-        Wd = idx + 1
-    elif H > W:
-        Hd = idx + 1
-
+    mw = min(W, H)
+    A = mw ** 2
+    ovr = 0.3 # desired overlap of neighboring regions
     regions = []
 
     for l in range(1, L+1):
-
-        wl = np.floor(2*w/(l+1))
-        wl2 = np.floor(wl/2 - 1)
-
-        b = (W - wl) / (l + Wd - 1)
-        if np.isnan(b): # for the first level
-            b = 0
-        cenW = np.floor(wl2 + np.arange(0, l+Wd)*b) - wl2 # center coordinates
-
-        b = (H-wl)/(l+Hd-1)
-        if np.isnan(b): # for the first level
-            b = 0
-        cenH = np.floor(wl2 + np.arange(0, l+Hd)*b) - wl2 # center coordinates
-
-        for i_ in cenH:
-            for j_ in cenW:
-                # R = np.array([i_, j_, wl, wl], dtype=np.int)
-                R = np.array([j_, i_, wl, wl], dtype=np.int)
+        ra = A * ((L + 1 - l) / L)
+        rw = np.floor(np.sqrt(ra))
+        for hy in devide_line(H, rw, ovr):
+            for hx in devide_line(W, rw, ovr):
+                R = np.array([hx, hy, rw, rw], dtype=np.int)
                 if not min(R[2:]):
                     continue
-
                 regions.append(R)
 
     regions = np.asarray(regions)
+
     return regions
