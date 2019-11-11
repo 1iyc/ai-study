@@ -36,13 +36,14 @@ def devide_line(total_line, region_line, ovr):
 
 def rmac_regions(W, H, L):
     mw = min(W, H)
-    A = mw ** 2
-    ovr = 0.3 # desired overlap of neighboring regions
+    # A = mw ** 2
+    ovr = 0.4 # desired overlap of neighboring regions
     regions = []
 
     for l in range(1, L+1):
-        ra = A * ((L + 1 - l) / L)
-        rw = np.floor(np.sqrt(ra))
+        # ra = A * ((L + 1 - l) / L)
+        # rw = np.floor(np.sqrt(ra))
+        rw = (2 * mw) / (l + 1)
         for hy in devide_line(H, rw, ovr):
             for hx in devide_line(W, rw, ovr):
                 R = np.array([hx, hy, rw, rw], dtype=np.int)
